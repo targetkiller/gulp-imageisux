@@ -1,0 +1,71 @@
+{
+  "name": "gulp-imageisux",
+  "version": "1.0.1",
+  "description": "智图gulp插件",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/targetkiller/gulp-imageisux"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "index.js"
+  ],
+  "author": {
+    "name": "TQ",
+    "email": "targetkillering@gmail.com",
+    "url": "http://targetkiller.net"
+  },
+  "keywords": [
+    "gulpplugin",
+    "isux",
+    "image",
+    "img",
+    "picture",
+    "photo",
+    "minify",
+    "minifier",
+    "compress",
+    "png"
+  ],
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "gulp-util": "~2.2.14",
+    "gulp": "~3.3.4",
+    "request": "~2.31.0",
+    "through2": "~0.4.1",
+    "needle": "*"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "https://github.com/targetkiller/gulp-imageisux",
+  "_id": "gulp-imageisux@1.0.1",
+  "dist": {
+
+  },
+  "_from": "gulp-imageisux@",
+  "_npmVersion": "1.3.24",
+  "_npmUser": {
+    "name": "TQ",
+    "email": "targetkillering@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "TQ",
+      "email": "targetkillering@gmail.com"
+    }
+  ],
+  "directories": {},
+  "_shasum": "",
+  "_resolved": "",
+  "readme": "ERROR: No README data found!"
+}
