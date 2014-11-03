@@ -7,6 +7,7 @@ var fs = require('fs');
 
 function imageisux (argument) {
 	var stream = through.obj(function(file,encoding,callback){
+        var that = this;
     	if (file.isNull()) {
               this.push(file);
               return callback();
@@ -25,7 +26,7 @@ function imageisux (argument) {
                 };
 
                 imagemin(data,function(data){
-                    stream.push(data);
+                    return callback;
                 });
             }
 
@@ -63,9 +64,8 @@ function imagemin(data, cb) {
             var size = json_str.size;
 
             needle.get(output,function(err, resp, body){
-
                 console.log(body);
-                cb(body)
+                cb(body);
             });
         }
     });
