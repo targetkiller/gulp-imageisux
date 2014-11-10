@@ -3,7 +3,7 @@
 [智图](http://image.isux.us/)的gulp插件
 
 ##Introduce
-it is a gulp plugin for imageisux（智图）, it can automatically compress your images, and it can returns original type and webp-type.
+it is a gulp plugin for imageisux(智图), it can automatically compress your images, and it can returns original type and webp-type.
 you just need to set the 'src(path)' which is the path of your images, and then run 'pipe(imageisux())', evertything will be done, that's so easy. 
 
 ##Install
