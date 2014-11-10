@@ -4,7 +4,7 @@
 
 ##Introduce
 it is a gulp plugin for imageisux(智图), it can automatically compress your images, and it can returns original type and webp-type.
-you just need to set the 'src(path)' which is the path of your images, and then run 'pipe(imageisux())', evertything will be done, that's so easy. 
+you just need to set the `src(path)` which is the path of your images, and then run `pipe(imageisux())`, evertything will be done, that's so easy. 
 
 ##Install
 Of course, you need to install gulp first. And then use the npm:
