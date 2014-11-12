@@ -29,9 +29,10 @@ function imageisux (abspath,enableWebp) {
 
             // surport jpg,png,gif
             if(file_type=='png'||file_type=='jpg'||file_type=='jpeg'||file_type=='gif'){
+                var _enableWebp = enableWebp || false;
                 var data = {
                     fileSelect: { file: file_path, content_type: 'image/'+file_type },
-                    webp:true
+                    webp:_enableWebp
                 };
 
                 needle.post('http://image.isux.us/index.php/preview/upload_file', data, {multipart:true}, function(err, resp ,body) {
@@ -59,17 +60,8 @@ function imageisux (abspath,enableWebp) {
                                 * type=2：webp
                                 */
                                 var output_ary = new Array();
-                                // abspath is exist, so just give the webp.
-                                if(abspath!==""&&enableWebp===true){
-                                    if(output_webp!==undefined){
-                                        output_ary.push({'type':2,'url':output_webp});
-                                    }
-                                    else{
-                                        gutil.log('[error]','this webp is not exist!'+file_name);
-                                    }
-                                }
-                                // abspath is exist and enableWebp is false,so give the origin.
-                                else if(abspath!==""&&enableWebp===false){
+                                // abspath is exist and need not use webp
+                                if(abspath!==""&&enableWebp===false){
                                     if(output!==undefined){
                                         output_ary.push({'type':1,'url':output});
                                     }
@@ -77,23 +69,29 @@ function imageisux (abspath,enableWebp) {
                                         gutil.log('[error]','this origin is not exist!'+file_name);
                                     }
                                 }
-                                // abspath is not exist, so init /dest/ and /webp/ and give the origin and webp types.
-                                else if(abspath===""){
+                                // abspath is not exist, so init /dest/ and /webp/ and give the origin and webp-types.
+                                // if abspath is exist, so output the images to /abspath/ and give the webp-types to /webp/.
+                                else{
                                     if(output!==undefined){
                                         output_ary.push({'type':1,'url':output});
+                                    }
+                                    else{ 
+                                        gutil.log('[error]','this origin is not exist!'+file_name);
                                     }
                                     if(output_webp!==undefined){
                                         output_ary.push({'type':2,'url':output_webp});
                                     }
+                                    else{
+                                        gutil.log('[error]','this webp is not exist!'+file_name);
+                                    }
                                 }
-
-                                // console.log(output_ary);
 
                                 var FILE_CONTENT = file_name.split('.');
                                 var FILENAME = FILE_CONTENT[0];
                                 var FILETYPE = FILE_CONTENT[1];
 
                                 // download the image from server http://image.isux.us
+                                console.log(output_ary);
                                 for(var i = 0; i < output_ary.length; i++){
                                     (function(){
                                         var PREFIX = "";
@@ -107,7 +105,7 @@ function imageisux (abspath,enableWebp) {
                                         
                                         needle.get(output_ary[i].url, function(err, resp, body) {
                                             if(body) {
-                                                if(abspath){
+                                                if(abspath!==""&&OUTPUT_TYPE==1){
                                                     var DEST_DIR = file_dirname + "/" + abspath + "/";
                                                 }
                                                 else if(OUTPUT_TYPE==1){
@@ -128,7 +126,15 @@ function imageisux (abspath,enableWebp) {
 
                                                 fs.writeFile(fd, body, function(err, data){
                                                     if (err) {
-                                                      gutil.log('[error] :   ', err);
+                                                      gutil.log('[error]', 'file cannot write, will be write again...'+err);
+                                                        fs.writeFile(fd, body, function(err, data){
+                                                            if (err) {
+                                                              gutil.log('[error]', 'file cannot write again!'+FILENAME+' error:'+err);
+                                                            }
+                                                            else{
+                                                                console.log('file write again success!');
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             } else {
@@ -144,7 +150,8 @@ function imageisux (abspath,enableWebp) {
 
                         }
                         else{
-                            gutil.log('[error]','result can not be empty!'+file_name);
+                            gutil.log('[error]','the body returns has error!'+file_name);
+                            console.log(body);
                         }
                     }
                 });
