@@ -1,6 +1,6 @@
 {
   "name": "gulp-imageisux",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "智图gulp插件",
   "main": "index.js",
   "repository": {
@@ -63,9 +63,5 @@
       "name": "TQ",
       "email": "targetkillering@gmail.com"
     }
-  ],
-  "directories": {},
-  "_shasum": "",
-  "_resolved": "",
-  "readme": "ERROR: No README data found!"
+  ]
 }

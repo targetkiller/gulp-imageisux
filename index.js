@@ -50,7 +50,9 @@ function imageisux (abspath,enableWebp) {
                                 // get the url of image
                                 var output = json_str.output;
                                 var output_webp = json_str.output_webp;
+                                // var output_code = json_str.code;
 
+                                // console.log('===outputcode:'+output_code);
                                 // var output_png = json_str.output_png;
                                 // var size = json_str.size;
 
@@ -91,7 +93,6 @@ function imageisux (abspath,enableWebp) {
                                 var FILETYPE = FILE_CONTENT[1];
 
                                 // download the image from server http://image.isux.us
-                                console.log(output_ary);
                                 for(var i = 0; i < output_ary.length; i++){
                                     (function(){
                                         var PREFIX = "";
