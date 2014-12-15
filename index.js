@@ -5,9 +5,64 @@ var needle = require('needle');
 var path = require('path');
 var fs = require('fs');
 
+// global
+var _abspath;
+var enableWebp;
+var file_dirname;
+
+// if err, write the origin file instead
+function write_originfile(file_name){
+    if(file_dirname!==undefined){
+        // read file
+        fs.readFile(file_dirname+'/'+file_name,'',function(err,body){
+            if(err){
+                gutil.log('[error]', '[fun write_originfile]'+ file_name +' cannot read...');
+            }
+            else{
+                var DEST_DIR;
+                if(_abspath!==""){
+                    DEST_DIR = file_dirname + _abspath;
+                }else{
+                    DEST_DIR = file_dirname + "/dest/";
+                }
+
+                fs.exists(DEST_DIR,function(exists){
+                    if(!exists){
+                        fs.mkdirSync(DEST_DIR);
+                    }
+                });
+
+                var fd = DEST_DIR + file_name;
+
+                // read file
+                fs.writeFile(fd, body, function(err, data){
+                    if (err) {
+                        gutil.log('[error]', '[fun write_originfile]'+ file_name +' cannot write, will be write again...');
+                        // if err, write to file twice
+                        fs.writeFile(fd, body, function(err, data){
+                            if (err) {
+                              gutil.log('[error]', '[fun write_originfile]'+ file_name +' cannot write! Error info:'+err);
+                            }
+                            else{
+                                // console.log('.');
+                            }
+                        });
+                    }
+                    else{
+                        // console.log('.');
+                    }
+                });
+            }
+        });
+    }
+    else{
+        gutil.log('[error]', '[fun write_originfile]File_dirname is not exist!');
+    }
+}
+
 function imageisux (abspath,enableWebp) {
     var stream = through.obj(function(file,encoding,callback){
-        abspath = abspath || "";
+        _abspath = abspath || "";
         enableWebp = enableWebp || false;
         var _that = this;
         if (file.isNull()) {
@@ -22,39 +77,41 @@ function imageisux (abspath,enableWebp) {
 
         if (file.isBuffer()) {
             var file_path = file.path;
-            var file_dirname = path.dirname(file.path);
+            file_dirname = path.dirname(file.path);
             var file_name = path.basename(file.path);
             var file_type = path.extname(file.path);
             file_type = file_type.slice(1,file_type.length);
 
             // surport jpg,png,gif
             if(file_type=='png'||file_type=='jpg'||file_type=='jpeg'||file_type=='gif'){
-                var _enableWebp = enableWebp || false;
                 var data = {
-                    fileSelect: { file: file_path, content_type: 'image/'+file_type },
-                    webp:_enableWebp
+                    fileSelect: {file: file_path, content_type: 'image/'+file_type },
+                    webp:enableWebp
                 };
 
                 needle.post('http://image.isux.us/index.php/preview/upload_file', data, {multipart:true}, function(err, resp ,body) {
                     if(err){
-                        console.error('send post error:' + err);
+                        gutil.log('[error]', 'Cannot post to the server, the filename is:'+file_name);
+                        write_originfile(file_name);
                     }
                     else{
-                        // console.log('photo receive...');
+                        // server will return a json
                         if(body.indexOf('{')>-1){
-                            // turn the data to json
-                            var str = '({'+body.split('{')[1]+')';
                             try{
+                                // format the json
+                                var str = '({'+body.split('{')[1]+')';
                                 var json_str = eval(str);
 
-                                // get the url of image
+                                /*
+                                * output: origin type of compressed images
+                                * output_webp: webp type of compressed images
+                                * output_code: the status code
+                                * size: images size
+                                */
                                 var output = json_str.output;
                                 var output_webp = json_str.output_webp;
-                                // var output_code = json_str.code;
-
-                                // console.log('===outputcode:'+output_code);
-                                // var output_png = json_str.output_png;
-                                // var size = json_str.size;
+                                var output_code = json_str.code;
+                                var size = json_str.size;
 
                                 /*
                                 * all the images return
@@ -63,14 +120,15 @@ function imageisux (abspath,enableWebp) {
                                 */
                                 var output_ary = new Array();
                                 // abspath is exist and need not use webp
-                                if(abspath!==""&&enableWebp===false){
+                                if(_abspath!=="" && enableWebp===false){
                                     if(output!==undefined){
                                         output_ary.push({'type':1,'url':output});
                                     }
                                     else{ 
-                                        gutil.log('[error]','this origin is not exist!'+file_name);
+                                        gutil.log('[error]','The return image does not exist! The filename is:'+file_name);
                                     }
                                 }
+
                                 // abspath is not exist, so init /dest/ and /webp/ and give the origin and webp-types.
                                 // if abspath is exist, so output the images to /abspath/ and give the webp-types to /webp/.
                                 else{
@@ -78,13 +136,14 @@ function imageisux (abspath,enableWebp) {
                                         output_ary.push({'type':1,'url':output});
                                     }
                                     else{ 
-                                        gutil.log('[error]','this origin is not exist!'+file_name);
+                                        gutil.log('[error]','The origin-type is not exist! The filename is:'+file_name);
                                     }
+
                                     if(output_webp!==undefined){
                                         output_ary.push({'type':2,'url':output_webp});
                                     }
                                     else{
-                                        gutil.log('[error]','this webp is not exist!'+file_name);
+                                        gutil.log('[error]','This webp-type is not exist! The filename is:'+file_name);
                                     }
                                 }
 
@@ -92,7 +151,6 @@ function imageisux (abspath,enableWebp) {
                                 var FILENAME = FILE_CONTENT[0];
                                 var FILETYPE = file_type;
 
-                                // download the image from server http://image.isux.us
                                 for(var i = 0; i < output_ary.length; i++){
                                     (function(){
                                         var PREFIX = "";
@@ -104,10 +162,11 @@ function imageisux (abspath,enableWebp) {
                                             default:PREFIX="";break;
                                         }
                                         
+                                        // download the image from server http://image.isux.us
                                         needle.get(output_ary[i].url, function(err, resp, body) {
                                             if(body) {
-                                                if(abspath!==""&&OUTPUT_TYPE==1){
-                                                    var DEST_DIR = file_dirname + "/" + abspath + "/";
+                                                if(_abspath!==""&&OUTPUT_TYPE==1){
+                                                    var DEST_DIR = file_dirname + "/" + _abspath + "/";
                                                 }
                                                 else if(OUTPUT_TYPE==1){
                                                     var DEST_DIR = file_dirname + "/dest/";
@@ -127,32 +186,39 @@ function imageisux (abspath,enableWebp) {
 
                                                 fs.writeFile(fd, body, function(err, data){
                                                     if (err) {
-                                                      gutil.log('[error]', 'file cannot write, will be write again...'+err);
+                                                        gutil.log('[error]', PREFIX + FILENAME + APPENDFIX +' cannot write, will be write again...');
+                                                        // if err, write to file twice
                                                         fs.writeFile(fd, body, function(err, data){
                                                             if (err) {
-                                                              gutil.log('[error]', 'file cannot write!'+FILENAME+' error:'+err);
+                                                              gutil.log('[error]', PREFIX + FILENAME + APPENDFIX +' cannot write! Error info:'+err);
+                                                              write_originfile(file_name);
                                                             }
                                                             else{
-                                                                // console.log('file write again success!');
+                                                                // console.log('.');
                                                             }
                                                         });
                                                     }
+                                                    else{
+                                                        // console.log('.');
+                                                    }
                                                 });
                                             } else {
-                                                gutil.log('[error]','return data is not exist!'+FILENAME);
+                                                gutil.log('[error]','The data returned is not exist! The filename is:'+file_name);
+                                                write_originfile(file_name);
                                             }
                                         });
                                     })(i);
                                 }
                             }
                             catch(err){
-                                gutil.log('[error]',err+" filename:"+ file_name);
+                                gutil.log('[error]','Format json data err, the filename is:'+ file_name);
+                                write_originfile(file_name);
                             }
 
                         }
                         else{
-                            gutil.log('[error]','the body returns has error!'+file_name);
-                            console.log(body);
+                            gutil.log('[error]','The data returned has error! The file name is:'+file_name);
+                            write_originfile(file_name);
                         }
                     }
                 });
@@ -161,7 +227,6 @@ function imageisux (abspath,enableWebp) {
         _that.push(file);
         callback();
     });
-
     return stream;
 }
 
