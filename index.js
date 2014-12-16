@@ -10,7 +10,7 @@ function imageisux (abspath,enableWebp) {
         abspath = abspath || "";
         enableWebp = enableWebp || false;
         var _that = this;
-    	if (file.isNull()) {
+        if (file.isNull()) {
             this.push(file);
             return callback();
         }
@@ -40,7 +40,7 @@ function imageisux (abspath,enableWebp) {
                         console.error('send post error:' + err);
                     }
                     else{
-                        console.log('photo receive...');
+                        // console.log('photo receive...');
                         if(body.indexOf('{')>-1){
                             // turn the data to json
                             var str = '({'+body.split('{')[1]+')';
@@ -88,9 +88,9 @@ function imageisux (abspath,enableWebp) {
                                     }
                                 }
 
-                                var FILE_CONTENT = file_name.split('.');
+                                var FILE_CONTENT = file_name.split('.'+file_type);
                                 var FILENAME = FILE_CONTENT[0];
-                                var FILETYPE = FILE_CONTENT[1];
+                                var FILETYPE = file_type;
 
                                 // download the image from server http://image.isux.us
                                 for(var i = 0; i < output_ary.length; i++){
@@ -130,10 +130,10 @@ function imageisux (abspath,enableWebp) {
                                                       gutil.log('[error]', 'file cannot write, will be write again...'+err);
                                                         fs.writeFile(fd, body, function(err, data){
                                                             if (err) {
-                                                              gutil.log('[error]', 'file cannot write again!'+FILENAME+' error:'+err);
+                                                              gutil.log('[error]', 'file cannot write!'+FILENAME+' error:'+err);
                                                             }
                                                             else{
-                                                                console.log('file write again success!');
+                                                                // console.log('file write again success!');
                                                             }
                                                         });
                                                     }
@@ -160,9 +160,9 @@ function imageisux (abspath,enableWebp) {
         }
         _that.push(file);
         callback();
-	});
+    });
 
-	return stream;
+    return stream;
 }
 
 module.exports = imageisux;
