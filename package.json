@@ -45,7 +45,7 @@
     "mocha": "*"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/targetkiller/gulp-imageisux/issues"
   },
   "homepage": "https://github.com/targetkiller/gulp-imageisux",
   "_id": "gulp-imageisux@1.0.1",
