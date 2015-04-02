@@ -30,7 +30,7 @@ options
 -------------------
 These are basically options to the imageisux 
 
- - `dirpath`: If it is not defined, it will automatically generate two path: '/dest/' for original type, '/webp/' for webp-type.
+ - `dirpath`: If it is not defined, it will automatically generate two path: '/dest/' for original type, '/webp/' for webp-type, finally the path will be 'src_path+dirpath'.
  - `enableWebp`  : If `true`, it will only generate the webp-type, and if 'false', it will only generate the original type. Defaults to `false`.
 
 
