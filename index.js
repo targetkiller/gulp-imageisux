@@ -89,7 +89,7 @@ function imageisux (abspath,enableWebp) {
                     webp:enableWebp
                 };
 
-                needle.post('http://image.isux.us/index.php/preview/upload_file', data, {multipart:true}, function(err, resp ,body) {
+                needle.post('http://zhitu.tencent.com/index.php/preview/upload_file', data, {multipart:true}, function(err, resp ,body) {
                     if(err){
                         gutil.log('[error]', 'Cannot post to the server, the filename is:'+file_name);
                         write_originfile(file_name);
