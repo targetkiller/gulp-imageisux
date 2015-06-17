@@ -16,7 +16,7 @@ function write_originfile(file_name){
         // read file
         fs.readFile(file_dirname+'/'+file_name,'',function(err,body){
             if(err){
-                gutil.log('[error]', '[fun write_originfile]'+ file_name +' cannot read...');
+                gutil.log('[error]', file_name +' cannot read...');
             }
             else{
                 var DEST_DIR;
@@ -37,26 +37,20 @@ function write_originfile(file_name){
                 // read file
                 fs.writeFile(fd, body, function(err, data){
                     if (err) {
-                        gutil.log('[error]', '[fun write_originfile]'+ file_name +' cannot write, will be write again...');
+                        // gutil.log('[error]', '[fun write_originfile]'+ file_name +' cannot write, will be write again...');
                         // if err, write to file twice
                         fs.writeFile(fd, body, function(err, data){
                             if (err) {
-                              gutil.log('[error]', '[fun write_originfile]'+ file_name +' cannot write! Error info:'+err);
-                            }
-                            else{
-                                // console.log('.');
+                              gutil.log('[error]', file_name +' cannot write! Error info:'+err);
                             }
                         });
-                    }
-                    else{
-                        // console.log('.');
                     }
                 });
             }
         });
     }
     else{
-        gutil.log('[error]', '[fun write_originfile]File_dirname is not exist!');
+        gutil.log('[error]', 'file_dirname is not exist!');
     }
 }
 
@@ -89,9 +83,9 @@ function imageisux (abspath,enableWebp) {
                     webp:enableWebp
                 };
 
-                needle.post('http://zhitu.tencent.com/index.php/preview/upload_file', data, {multipart:true}, function(err, resp ,body) {
+                needle.post('http://zhitu.isux.us/index.php/preview/upload_file', data, {multipart:true}, function(err, resp ,body) {
                     if(err){
-                        gutil.log('[error]', 'Cannot post to the server, the filename is:'+file_name);
+                        gutil.log('[error]', file_name+' cannot post to the server.');
                         write_originfile(file_name);
                     }
                     else{
@@ -125,7 +119,7 @@ function imageisux (abspath,enableWebp) {
                                         output_ary.push({'type':1,'url':output});
                                     }
                                     else{ 
-                                        gutil.log('[error]','The return image does not exist! The filename is:'+file_name);
+                                        gutil.log('[error]','The return image '+file_name+' does not exist!');
                                     }
                                 }
 
@@ -136,14 +130,14 @@ function imageisux (abspath,enableWebp) {
                                         output_ary.push({'type':1,'url':output});
                                     }
                                     else{ 
-                                        gutil.log('[error]','The origin-type is not exist! The filename is:'+file_name);
+                                        gutil.log('[error]',file_name+' cannot turn to origin-type!');
                                     }
 
                                     if(output_webp!==undefined){
                                         output_ary.push({'type':2,'url':output_webp});
                                     }
                                     else{
-                                        gutil.log('[error]','This webp-type is not exist! The filename is:'+file_name);
+                                        gutil.log('[error]',file_name+' cannot turn to webp-type!');
                                     }
                                 }
 
@@ -162,7 +156,7 @@ function imageisux (abspath,enableWebp) {
                                             default:PREFIX="";break;
                                         }
                                         
-                                        // download the image from server http://image.isux.us
+                                        // download the image from server
                                         needle.get(output_ary[i].url, function(err, resp, body) {
                                             if(body) {
                                                 if(_abspath!==""&&OUTPUT_TYPE==1){
@@ -186,24 +180,18 @@ function imageisux (abspath,enableWebp) {
 
                                                 fs.writeFile(fd, body, function(err, data){
                                                     if (err) {
-                                                        gutil.log('[error]', PREFIX + FILENAME + APPENDFIX +' cannot write, will be write again...');
+                                                        // gutil.log('[error]', PREFIX + FILENAME + APPENDFIX +' cannot write, will be write again...');
                                                         // if err, write to file twice
                                                         fs.writeFile(fd, body, function(err, data){
                                                             if (err) {
                                                               gutil.log('[error]', PREFIX + FILENAME + APPENDFIX +' cannot write! Error info:'+err);
                                                               write_originfile(file_name);
                                                             }
-                                                            else{
-                                                                // console.log('.');
-                                                            }
                                                         });
-                                                    }
-                                                    else{
-                                                        // console.log('.');
                                                     }
                                                 });
                                             } else {
-                                                gutil.log('[error]','The data returned is not exist! The filename is:'+file_name);
+                                                gutil.log('[error]','The data of '+file_name+' returned is not exist!');
                                                 write_originfile(file_name);
                                             }
                                         });
