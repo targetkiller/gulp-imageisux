@@ -1,6 +1,6 @@
 {
   "name": "gulp-imageisux",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "description": "智图gulp插件",
   "main": "index.js",
   "repository": {
@@ -16,7 +16,7 @@
   "author": {
     "name": "TQ",
     "email": "targetkillering@gmail.com",
-    "url": "http://targetkiller.net"
+    "url": "http://tqtan.com"
   },
   "keywords": [
     "gulpplugin",
