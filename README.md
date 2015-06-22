@@ -1,45 +1,46 @@
 #gulp-imageisux
 
-[智图](http://image.isux.us/)的gulp插件
+[![NPM](https://nodei.co/npm/gulp-imageisux.png)](https://nodei.co/npm/gulp-imageisux/)
+
+[智图](http://zhitu.isux.us/)的gulp插件
 
 ##Introduce
-It is a gulp plugin for imageisux(智图), it can automatically compress your images, and it can returns original type and webp-type.
-You just need to set the `src(path)` which is the path of your images, and then run `pipe(imageisux())`, evertything will be done, that's so easy. 
+这是智图的gulp插件，它能自动压缩图片，并生成对应的webp格式(可选)。
+你只需要声明`src(path)`图片源地址，并执行方法`pipe(imageisux())`就好了。
 
 ##Install
-Of course, you need to install gulp first. And then use the npm:
+当然，你需要先安装[gulp](http://gulpjs.com/)。
 
 ```js
-$ npm install gulp-imageisux
+$ npm install --global gulp
+```
+
+然后安装插件。
+
+```js
+//全局安装
+$ npm install --global gulp-imageisux
+
+//局部安装
+$ npm install --save-dev gulp-imageisux
 ```
 
 ##Usage
+1、声明图片地址，例如放在img目录下面`gulp.src(['img/*'])`。
+2、指定参数，压缩图片导出目录`/dest/`和是否同时导出webp格式。
+
 ```js
 var imageisux = require('gulp-imageisux');
 
 gulp.task('imageisux', function() {
 	return gulp.src(['img/*'])
-			   .pipe(imageisux('/dest/',true));
+			   .pipe(imageisux('/dirpath/',true));
 });
 ```
 
 ##API
-Just two params you should notice, the `dirpath` and `enableWebp`.
+两个参数，`dirpath`目标目录以及`enableWebp`是否同时导出对应WEBP格式图片。
 
-options
--------------------
-These are basically options to the imageisux 
+ - `dirpath`: 如果未定义，会自动生成两个目录：'/dest/'目录放压缩后图片，'/webp/'目录放对应的webp格式压缩图片。
 
- - `dirpath`: If it is not defined, it will automatically generate two path: '/dest/' for original type, '/webp/' for webp-type, finally the path will be `src_path+dirpath`.
- - `enableWebp`  : If `true`, it will only generate the webp-type, and if 'false', it will only generate the original type. Defaults to `false`.
-
-
-###imageisux(dirpath,enableWebp);
-```js
-var dirpath = "/after/";
-var enableWebp = true;
-gulp.task('imageisux', function() {
-	return gulp.src(['img/*'])
-			   .pipe(imageisux(dirpath,enableWebp));
-});
-```
+ - `enableWebp`  : 若为`true`，则会同时输出webp图片；若为`false`，则只会有压缩后原格式图片。
